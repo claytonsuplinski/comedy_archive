@@ -1,0 +1,80 @@
+<html>
+<head>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">  
+
+	<link href="https://fonts.googleapis.com/css?family=Biryani:900" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Lato:300,400" rel="stylesheet">	
+	
+	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+	
+	<link rel="stylesheet" href="./assets/css/main.css">
+</head>
+<body>
+<div class="header">
+	<div class="button" onclick="random_item();" >RANDOM CLIP</div>
+</div>
+<div id="content"></div>
+</body>
+
+<script src="./assets/lib/jquery.min.js"></script>
+
+<script>
+var ARCH = {};
+
+$.ajax({
+	url: './assets/data/data.json',
+	dataType: 'json',
+	success: function(data){
+		data.sort( function(a, b){ return a.name.toLowerCase() > b.name.toLowerCase(); });
+		ARCH.data = data;
+		
+		$(".header").append(
+			'<div class="button button-sm" onclick="all_items();">'+ data.length +  ' clip'+(data.length != 1 ? 's' : '')+'</div>'
+		);
+		
+		display_all();
+	}
+});
+
+function get_image(name){
+	return './assets/img/'+name.toLowerCase().replace(/[.,\/#!$%?\^&\*;:{}=\-_`~()\']/g, "").replace(/ /g, '')+'.jpg';
+};
+
+function item_to_html(a){
+	return '<div class="container">'+
+		'<a href="'+a.link+'" target="_blank">'+
+			'<div class="item">'+
+				'<table>'+
+					'<tr>'+
+						'<td class="title" '+(a.name.length > 25 ? 'style="font-size:1vw;"' : '')+'>'+a.name.toUpperCase()+'</div>'+
+					'</tr>'+
+					'<tr><td class="img" style="background-image:url('+get_image(a.name)+');"></td></tr>'+
+				'</table>'+
+			'</div>'+
+		'</a>'+
+	'</div>';
+};
+
+function display_items(items){
+	items.sort(function(a, b){ return a.name.toLowerCase() > b.name.toLowerCase(); });
+	$("#content").html('');
+	$("#content").html( items.map(function(a){ return item_to_html(a); }).join('') );
+};
+
+function display_all(){
+	display_items( ARCH.data );
+};
+
+function all_items(){
+	display_items( ARCH.data.recipes );
+};
+
+function random_item(){
+	window.open(ARCH.data[Math.floor(Math.random()*ARCH.data.length)].link, '_blank');
+};
+</script>
+</html>
